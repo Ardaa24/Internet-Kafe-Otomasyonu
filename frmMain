@@ -117,6 +117,20 @@ namespace Internet_Kafe
         }
 
 
+        //Masa Seçim Butonları
+        Button btn;
 
+        private void SecileneGore(object sender, MouseEventArgs e)
+        {
+            btn = sender as Button;
+          
+        }
+
+        RadioButton radio;
+        private void RbtnSecileneGore(object sender, EventArgs e)
+        {
+            radio = sender as RadioButton;
+            
+        }
     }
 }
