@@ -26,6 +26,8 @@ namespace Internet_Kafe
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // TODO: Bu kod satırı 'internetKafeDataSet.TBLSaatUcreti' tablosuna veri yükler. Bunu gerektiği şekilde taşıyabilir, veya kaldırabilirsiniz.
+            this.tBLSaatUcretiTableAdapter.Fill(this.internetKafeDataSet.TBLSaatUcreti);
             saatTimer.Start();
             rbtnSuresiz.Checked = true;
             Yenile();
