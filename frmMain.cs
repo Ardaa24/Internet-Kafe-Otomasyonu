@@ -8,11 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace Internet_Kafe
 {
     public partial class Form1: Form
     {
+        //SQL BAGLANTI
+        SqlConnection baglanti = new SqlConnection("Data Source=DESKTOP-29MDJI6\\SQLEXPRESS;Initial Catalog=InternetKafe;Integrated Security=True;Encrypt=False");
+       
         public Form1()
         {
             InitializeComponent();
@@ -22,8 +26,54 @@ namespace Internet_Kafe
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            saatTimer.Start(); // Timer başlasın
+            saatTimer.Start();
+            rbtnSuresiz.Checked = true;
+            Yenile();
+            cbBosMasalar.Text = "";
         }
+
+        private void Yenile()
+        {
+            // Boş masaları combobox'a çek
+            baglanti.Open();
+            SqlDataAdapter adtr = new SqlDataAdapter("select * from TBLMasa where durumu='BOŞ'", baglanti);
+            DataTable table = new DataTable();
+            adtr.Fill(table);
+            cbBosMasalar.DataSource = table;
+            cbBosMasalar.DisplayMember = "Masalar";
+            cbBosMasalar.ValueMember = "MasaID";
+            baglanti.Close();
+
+            // Tüm masa durumlarını oku
+            Dictionary<string, string> masaDurumlari = new Dictionary<string, string>();
+            baglanti.Open();
+            SqlCommand komut = new SqlCommand("select Masalar, Durumu from TBLMasa", baglanti);
+            SqlDataReader rdr = komut.ExecuteReader();
+            while (rdr.Read())
+            {
+                string masaAdi = rdr["Masalar"].ToString();
+                string durum = rdr["Durumu"].ToString();
+                masaDurumlari[masaAdi] = durum;
+            }
+            baglanti.Close();
+
+            // Butonları renklendir
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl is Button && ctrl.Name != "btnMasaAc")
+                {
+                    string masaAdi = ctrl.Text;
+                    if (masaDurumlari.ContainsKey(masaAdi))
+                    {
+                        if (masaDurumlari[masaAdi] == "BOŞ")
+                            ctrl.BackColor = Color.Green;
+                        else if (masaDurumlari[masaAdi] == "DOLU")
+                            ctrl.BackColor = Color.Red;
+                    }
+                }
+            }
+        }
+
 
         //SAAT BAŞLANGIÇ
         private void label1_Click(object sender, EventArgs e)
